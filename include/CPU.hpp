@@ -10,6 +10,7 @@
 
 namespace cpucore
 {
+const int CPU_BASE_CLOCK = 1000000;
 
 enum CPU_STATUS
 {
@@ -29,17 +30,15 @@ private:
     std::string _id;
     CPU_STATUS _status;
 
-    std::string _data_in;
-    std::string _data_out;
-
+    std::string _read_data;
     int _total_cycles;
     int _waiting_cycles;
 
     // this function requests an instruction from the instruction generator
-    bool fetchInstruction();
+    void fetchInstruction();
 
     // this function checks the type of instruction and performs the need actions
-    bool executeInstruction();
+    void executeInstruction();
 
     // this function requests to read memory from the cache controller
     void readMem();
@@ -48,10 +47,14 @@ private:
     void writeMem();
 
     //this function dumps processor information into a file
-    bool dumpToFile();
+    void dumpToFile();
 
 public:
-    CPU(std::string id, simulationcomputer::CpuPort *bus_port);
+    CPU(std::string id) : _id(id), clk(CPU_BASE_CLOCK){};
+
+    CPU(std::string id, simulationcomputer::CpuPort *bus_port) : _id(id), clk(CPU_BASE_CLOCK), _cache(bus_port){};
+
+    void connectBusPort(simulationcomputer::CpuPort *bus_port) { _cache.connectBusPort(bus_port); };
 
     //this function starts the CPU functioning, starts to count cycles and ticks the clock
     void loop();

@@ -1,69 +1,57 @@
-#include <iostream>
-#include <string>
+#include "../include/Cache.hpp"
 
-namespace CPU_CORE
+namespace cpucore
 {
 
-const int CACHE_SIZE = 8;
-enum CACHE_STATUS
+Cache::Cache()
 {
-    READY,
-    WAITING,
-    WORKING
-};
+}
 
-class Cache
+//outputs the contents of the Cache
+void Cache::dumpToFile()
 {
-private:
-    std::string _status;
-    std::string _data[CACHE_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0}; //this is the memory of the cache
-    bool _valid[CACHE_SIZE] = {0, 0, 0, 0, 0, 0, 0, 0};
-    int _tags[CACHE_SIZE];
-    int _address_line;
-    std::string _data_line;
-
-public:
-    Cache()
+    printf("\n The contents of the cache are:\n");
+    for (int i = 0; i < CACHE_SIZE; ++i)
     {
+        printf("Cache block %d contains data: %s, tag: %d, valid: %d, shared: %d, dirty: %d \n", i, _blocks[i].data, _blocks[i].tag, _blocks[i].valid, _blocks[i].shared, _blocks[i].dirty);
     }
+}
 
-    /**
-     * @brief Looks for the data from the internal memory, if address is present and valid in the cache a cache_hit(true) is returned, otherwise a cache miss(false) is returned
-     * 
-     * @param address The address
-     * @return true If data is encountered in memory _data_line is set to the data (Cache Hit)
-     * @return false If data is not encountered (Cache Miss)
-     */
-    bool try_readData(int address)
-    {
-        if (_tags[address % CACHE_SIZE] == address)
-        {
-            _data_line = _data[address % CACHE_SIZE];
-        }
+// returns cache block at requested address
+CacheBlock *Cache::readCacheBlock(int address)
+{
+    return &_blocks[address % CACHE_SIZE];
+}
+
+//writes a cache block to the
+void Cache::writeCacheBlock(int address, CacheBlock block)
+{
+}
+
+//writes a cache block to the
+void Cache::writeCacheBlock(int address, std::string data, bool shared, bool dirty)
+{
+    _blocks[address % CACHE_SIZE].data = data;
+    _blocks[address % CACHE_SIZE].tag = address;
+    _blocks[address % CACHE_SIZE].shared = shared;
+    _blocks[address % CACHE_SIZE].dirty = dirty;
+    _blocks[address % CACHE_SIZE].valid = true;
+}
+
+//invalidate cached data
+void Cache::invalidateBlock(int address)
+{
+    _blocks[address % CACHE_SIZE].valid = false;
+}
+
+//returns true if the requested address is stored in the cache and is valid
+bool Cache::lookupAddress(int address)
+{
+    CacheBlock block = _blocks[address % CACHE_SIZE];
+    if (block.tag == address && block.valid)
+        return true;
+    else
         return false;
-    }
+}
 
-    /**
-     * @brief Tries to write data to the cache, if address is present in the cache it writes the data and returns true, if the address is not present it returns false
-     * 
-     * @return true 
-     * @return false 
-     */
-    bool try_writeData()
-    {
-
-        return false;
-    }
-
-    /**
-     * @brief Stores data in the cache, sets the valid, tag, and data for the provided address
-     * 
-     * @param address 
-     * @param data 
-     */
-    void cacheData(int address, std::string data)
-    {
-    }
-};
-
-} // namespace CPU_CORE
+} // namespace cpucore

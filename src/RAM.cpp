@@ -1,55 +1,57 @@
-#include <iostream>
-#include <string>
+#include "../include/RAM.hpp"
 
-namespace CPU_CORE
+namespace simulationcomputer
 {
 
-const int RAM_SIZE = 16;
-enum RAM_STATUS
+//default contructor
+RAM::RAM() : clk(RAM_TIME)
 {
-    READY,
-    WAITING,
-    WORKING
-};
+    for (int i = 0; i < RAM_SIZE; ++i)
+        _data[i] = "0";
+}
 
-class RAM
-{
-private:
-    std::string _status;
-    std::string _data[RAM_SIZE]; //this is the memory of the RAM
-    int _address_line;
-    std::string _data_line;
-
-public:
-    RAM()
-    {
-        //_data = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    }
-
-    /**
+/**
      * @brief Looks for the data from the internal memory, if address is present and valid in the cache a cache_hit(true) is returned, otherwise a cache miss(false) is returned
      * 
      * @param address The address we want to read the data from
      */
-    void readData(int address)
+void RAM::readData(int address)
+{
+    if (address > 0 && address < RAM_SIZE)
     {
-        if (address > 0 && address < RAM_SIZE)
-        {
-            _data_line = _data[address];
-        }
+        _bus->setData(_data[address]);
+        clk.tick();
     }
+}
 
-    /**
+/**
      * @brief Writes data specified in _data to the address specified in _address
      * 
      * @return true 
      * @return false 
      */
-    bool writeData()
+void RAM::writeData(int address, std::string data)
+{
+
+    if (address > 0 && address < RAM_SIZE)
     {
-
-        return false;
+        _data[address] = data;
     }
-};
+    clk.tick();
+}
 
-} // namespace CPU_CORE
+//method call when there is a request by the bus
+void RAM::onNotify(MemPortEvent event)
+{
+    switch (event)
+    {
+    case WR_DATA:
+        writeData(_bus->getAddress(), _bus->getData());
+        break;
+
+    case RD_DATA:
+        readData(_bus->getAddress());
+        break;
+    }
+}
+} // namespace simulationcomputer

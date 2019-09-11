@@ -1,6 +1,8 @@
 
 #include <iostream>
 #include <string>
+#include <stdlib.h> /* srand, rand */
+#include <time.h>
 
 #ifndef INST_GEN
 #define INST_GEN

@@ -1,22 +1,18 @@
-#include <iostream>
-#include <string>
-#include <ctime>
+#include "../include/Clock.hpp"
 
-class Clock
+namespace simulationcomputer
 {
-    int _freq;
+Clock::Clock(int frequency)
+{
+    _freq = frequency*1000000;
+}
 
-public:
-    Clock(int frequency)
-    {
-        _freq = frequency;
-    }
-
-    /**
+/**
  * @brief Sleeps for the amount of time specified in the frequency
  * 
  */
-    void tick()
-    {
-    }
-};
+void Clock::tick()
+{
+    usleep(_freq);
+}
+} // namespace simulationcomputer

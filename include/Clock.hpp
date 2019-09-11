@@ -1,5 +1,9 @@
 #include <iostream>
+#include <time.h>
 #include <string>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
 
 #ifndef CLK
 #define CLK
@@ -12,6 +16,7 @@ private:
     int _freq;
 
 public:
+    Clock(int freq);
     void tick();
 };
 

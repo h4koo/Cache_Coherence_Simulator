@@ -11,13 +11,29 @@ namespace cpucore
 enum CacheControllerStatus
 {
     BSY,
+    WAITING_WB,
     RDY
 };
+enum CPUrequestType
+{
+    Rd,
+    Wr
+};
+
+typedef struct
+{
+    CPUrequestType req;
+    int address;
+    std::string data;
+} CPUrequest;
 
 class CacheController : public simulationcomputer::Observer
 {
 private:
     CacheControllerStatus _status; //current status action of the controller
+
+    CPUrequest _curr_request;
+    Cache _cache;
     int _cpu_address_line;
     int _cache_address_line;
     simulationcomputer::CpuPort *_bus_port;
@@ -28,12 +44,21 @@ private:
 
     bool tryWriteCacheData();
 
-    void memWriteback();
+    void memWriteback(int address, std::string data);
 
     void onNotify(simulationcomputer::CpuPortEvent event);
 
+    void cpuReadMiss(int address);
+    void cpuWriteMiss(int address);
+    void cpuWriteInvalidate(int address);
+
 public:
+    CacheController();
+    CacheController(simulationcomputer::CpuPort *bus_port);
+
     CacheControllerStatus getStatus();
+
+    std::string getCpuDataLine() { return _cpu_data_line; };
 
     void connectBusPort(simulationcomputer::CpuPort *bus_port) { _bus_port = bus_port; };
 

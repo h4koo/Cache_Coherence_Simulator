@@ -1,8 +1,8 @@
 #include <iostream>
 #include <string>
 
-#ifndef CACHE
-#define CACHE
+#ifndef CACHE_OBJ
+#define CACHE_OBJ
 
 namespace cpucore
 {
@@ -11,11 +11,11 @@ const int CACHE_SIZE = 8;
 
 typedef struct
 {
-    std::string _data;
-    bool _valid;
-    bool _shared;
-    bool _dirty;
-    int _tag;
+    std::string data = "0";
+    bool valid = false;
+    bool shared = false;
+    bool dirty = false;
+    int tag;
 } CacheBlock;
 
 class Cache
@@ -25,16 +25,25 @@ private:
     int _address_line;
     std::string _data_line;
 
-    bool dumpToFile();
+    void dumpToFile();
 
 public:
     Cache();
 
     // returns cache block at requested address
-    CacheBlock readCacheBlock(int address);
+    CacheBlock *readCacheBlock(int address);
 
     //writes a cache block to the
     void writeCacheBlock(int address, CacheBlock block);
+
+    //writes a cache block to the
+    void writeCacheBlock(int address, std::string data, bool shared, bool dirty = false);
+
+    //invalidate cached data
+    void invalidateBlock(int address);
+
+    bool lookupAddress(int address);
+
     /**
      * @brief Looks for the data from the internal memory, if address is present and valid in the cache a cache_hit(true) is returned, otherwise a cache miss(false) is returned
      * 
