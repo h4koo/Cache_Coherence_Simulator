@@ -5,17 +5,17 @@ namespace cpucore
 {
 InstructionGenerator::InstructionGenerator()
 {
+    srand(time(NULL));
 }
 
 Instruction InstructionGenerator::generateInstruction()
 {
-    srand(time(NULL));
-    // InstructionType types[3] = {WORK, READ_MEM, WRITE_MEM};
+
+    InstructionType types[3] = {WORK, READ_MEM, WRITE_MEM};
 
     Instruction ret;
+    ret.inst_type = types[rand() % 3];
 
-    // ret.inst_type = types[rand() % 3];
-    ret.inst_type = READ_MEM;
     ret.inst_address = rand() % 8;
 
     return ret;

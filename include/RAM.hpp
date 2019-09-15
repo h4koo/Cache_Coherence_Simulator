@@ -10,7 +10,7 @@ namespace simulationcomputer
 {
 
 const int RAM_SIZE = 16;
-const int RAM_TIME = 1;
+const int RAM_TIME = 2;
 
 class RAM : public RAMObserver
 {
@@ -39,7 +39,7 @@ public:
      */
     void writeData(int address, std::string data);
 
-    void connectBusPort(simulationcomputer::RAMPort *ram_port) {_bus= ram_port; };
+    void connectBusPort(simulationcomputer::RAMPort *ram_port) { _bus = ram_port; };
 
     // void setAddressLine(int address){_address_line=address;};
 

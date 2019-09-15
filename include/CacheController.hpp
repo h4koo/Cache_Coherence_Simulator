@@ -46,7 +46,7 @@ private:
 
     void memWriteback(int address, std::string data);
 
-        void cpuReadMiss(int address);
+    void cpuReadMiss(int address);
     void cpuWriteMiss(int address);
     void cpuWriteInvalidate(int address);
 
@@ -56,7 +56,11 @@ public:
 
     CacheControllerStatus getStatus();
 
-    std::string getCpuDataLine() { return _cpu_data_line; };
+    std::string getCpuDataLine()
+    {
+        _status = BSY;
+        return _cpu_data_line;
+    };
 
     void connectBusPort(simulationcomputer::CpuPort *bus_port) { _bus_port = bus_port; };
 

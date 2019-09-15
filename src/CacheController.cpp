@@ -5,12 +5,12 @@ using namespace simulationcomputer;
 namespace cpucore
 {
 
-CacheController::CacheController(){
-
+CacheController::CacheController()
+{
 }
-CacheController::CacheController(simulationcomputer::CpuPort *bus_port){
-    
-} 
+CacheController::CacheController(simulationcomputer::CpuPort *bus_port)
+{
+}
 bool CacheController::tryReadCacheData(int address)
 {
 
@@ -250,6 +250,9 @@ void CacheController::onNotify(simulationcomputer::CpuPortEvent event)
             //when all other caches have been invalidated finalize write to cache
             //write the cache as not shared and dirty
             _cache.writeCacheBlock(_cpu_address_line, _cpu_data_line, false, true);
+
+            //set status to ready so that the CPU knows data has been written
+            _status = RDY;
             break;
         case FLUSH:
         {

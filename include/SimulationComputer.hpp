@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+// #include <fstream>
 #include "omp.h"
 #include "CPU.hpp"
 #include "Bus.hpp"
@@ -21,6 +22,7 @@ private:
     std::vector<cpucore::CPU> cpus;
     Bus bus;
     RAM ram;
+    std::ofstream files[NUM_CPUS];
 
 public:
     SimulationComputer()
@@ -34,6 +36,15 @@ public:
             cpucore::CPU c(cpu_id);
             cpus.push_back(c);
 
+            // std::string id = _id;
+            cpu_id += ".txt";
+            // _output_file.open(id);
+            files[i].open(cpu_id);
+            std::string terminal_command = "xterm -e 'sh -c \"tail -f ";
+            terminal_command += cpu_id;
+            terminal_command += "\"'";
+            system(terminal_command.c_str());
+
             //connect them to the bus
             // cpus[i].connectBusPort(bus.connectCPU((Observer *)cpus[i].getCacheController()));
         }
@@ -44,8 +55,11 @@ public:
             // cpucore::CPU c(cpu_id);
             // cpus.[i] = c;
 
+            //their connected in a different loop because their address change after more items are pushed_back() in the cpus vector
+
             //connect them to the bus
             cpus[i].connectBusPort(bus.connectCPU((Observer *)cpus[i].getCacheController()));
+            cpus[i].setOutputFile(&files[i]);
         }
 
         //connect RAM memory to bus
@@ -57,13 +71,13 @@ public:
         printf("started looping CPUs\n");
         while (_started)
         {
-// #pragma omp parallel num_threads(4) shared(cpus, bus, ram)
+#pragma omp parallel num_threads(4) shared(cpus, bus, ram)
             {
                 int thread_id = omp_get_thread_num();
                 // printf("Looping thread%d\n", thread_id);
                 cpus[thread_id].work();
 
-// #pragma omp barrier
+#pragma omp barrier
                 cpus[thread_id].tick();
             }
         }
