@@ -21,7 +21,7 @@ private:
     // int _address_line;
     // std::string _data_line;
 
-    bool dumpToFile();
+    void dumpToFile();
 
 public:
     RAM();
@@ -38,6 +38,8 @@ public:
      * 
      */
     void writeData(int address, std::string data);
+
+    void connectBusPort(simulationcomputer::RAMPort *ram_port) {_bus= ram_port; };
 
     // void setAddressLine(int address){_address_line=address;};
 

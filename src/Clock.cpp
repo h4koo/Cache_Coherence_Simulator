@@ -4,7 +4,7 @@ namespace simulationcomputer
 {
 Clock::Clock(int frequency)
 {
-    _freq = frequency*1000000;
+    _freq = frequency * 1000000;
 }
 
 /**

@@ -5,6 +5,12 @@ using namespace simulationcomputer;
 namespace cpucore
 {
 
+CacheController::CacheController(){
+
+}
+CacheController::CacheController(simulationcomputer::CpuPort *bus_port){
+    
+} 
 bool CacheController::tryReadCacheData(int address)
 {
 
@@ -50,6 +56,9 @@ CacheControllerStatus CacheController::getStatus()
 void CacheController::cpuWrite(int address, std::string data)
 {
     _status = BSY; //set status to busy
+    _cpu_data_line = data;
+    _cpu_address_line = address;
+
     CacheBlock *block = _cache.readCacheBlock(address % CACHE_SIZE);
 
     if (block->valid)
@@ -84,6 +93,7 @@ void CacheController::cpuWrite(int address, std::string data)
 void CacheController::cpuRead(int address)
 {
     _status = BSY; //set status to busy
+    _cpu_address_line = address;
 
     CacheBlock *block = _cache.readCacheBlock(address % CACHE_SIZE);
     if (block->valid)
@@ -162,22 +172,14 @@ void CacheController::snoop()
             _bus_port->setCpuSnoopResponse(ACKNOWLEDGE);
             break;
         }
-        case RdMiss:                           //another cache is trying to read a block
-            if (block->shared && block->dirty) //if shared and dirty the block is owned
-            {
-                //the data must be supplied by the owning cache
-                _bus_port->setData(block->data);
-                _bus_port->setCpuSnoopResponse(DATA_CACHED);
-            }
-            else
-            {
+        case RdMiss: //another cache is trying to read a block
 
-                //set block as shared and share it
-                block->shared = true;
+            //set block as shared and share it
+            block->shared = true;
 
-                _bus_port->setData(block->data);
-                _bus_port->setCpuSnoopResponse(DATA_CACHED);
-            }
+            _bus_port->setData(block->data);
+            _bus_port->setCpuSnoopResponse(DATA_CACHED);
+
             break;
 
         case WrInvalidate:
@@ -221,9 +223,6 @@ void CacheController::onNotify(simulationcomputer::CpuPortEvent event)
         {
 
             //finalize write to cache
-            _cpu_address_line = _bus_port->getAddress();
-            _cpu_data_line = _bus_port->getData();
-
             //write the cache as not shared and dirty
             _cache.writeCacheBlock(_cpu_address_line, _cpu_data_line, false, true);
 
@@ -248,10 +247,7 @@ void CacheController::onNotify(simulationcomputer::CpuPortEvent event)
         }
         case WrInvalidate:
 
-            //when all other caches have been invalidated
-            //finalize write to cache
-            _cpu_address_line = _bus_port->getAddress();
-            _cpu_data_line = _bus_port->getData();
+            //when all other caches have been invalidated finalize write to cache
             //write the cache as not shared and dirty
             _cache.writeCacheBlock(_cpu_address_line, _cpu_data_line, false, true);
             break;

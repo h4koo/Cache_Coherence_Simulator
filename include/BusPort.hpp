@@ -84,12 +84,11 @@ class CpuPort : public BusPort
     Observer *_cpu;
 
     BusRequestType _cpu_request_type;
-
     CpuPortEvent _cpu_snoop_response;
     bool _shared;
 
 public:
-    CpuPort();
+    CpuPort(int id, Observer *bus) : BusPort(id, bus){};
 
     void setCpuRequest(BusRequestType request) { _cpu_request_type = request; };
     BusRequestType getCpuRequest() { return _cpu_request_type; }
@@ -114,6 +113,7 @@ class RAMPort : public BusPort
     RAMObserver *_ram;
 
 public:
+    RAMPort(int id, Observer *bus) : BusPort(id, bus){};
     void connectRAM(RAMObserver *ram);
     void readMem();
 

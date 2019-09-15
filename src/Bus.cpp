@@ -3,31 +3,52 @@
 namespace simulationcomputer
 {
 
+Bus::Bus() : _ram_memory(0, (Observer *)this)
+{
+
+    //create the CPU ports and assign self as an observer
+    for (int i = 0; i < CPU_BUS_PORTS; ++i)
+    {
+        CpuPort port(i, (Observer *)this);
+        _cpu_ports.push_back(port);
+    }
+
+    _connected_ports = 0;
+    // start();
+    //initiate thread for processing data
+}
+
 //sends request to read data to all CPUs and ultimately Memory (RAM)
 void Bus::requestReadData(BusRequest request)
 {
     CpuPort *port;
     CpuPortEvent event;
 
+    //set the event in the ports t BUS_REQUESTS so they know they need to snoop
     event.port_id = _current_request.port_id;
     event.event_type = BUS_REQUEST;
 
-    CpuPort *request_port = &_cpu_ports[_current_request.port_id];
+    CpuPort *request_port = &(_cpu_ports[_current_request.port_id]);
+
+    //for each of the CPU ports
     for (int i = 0; i < CPU_BUS_PORTS; ++i)
     {
         //don't send a read request to the CPU requesting it
         if (i == _current_request.port_id)
             continue;
 
-        port = &_cpu_ports[i];
+        //set the current request on the port with the address
+        port = &(_cpu_ports[i]);
         port->setCurrentBusRequest(_current_request.request_type);
         port->setAddress(_current_request.address);
+
+        //notifies cachecontrolller to snoop the request in the port
         port->notifyCPU(event);
 
-        if (port->getCpuSnoopResponse() == DATA_CACHED)
-        {
-            //if the CPU had the data cached
+        //after the cachecontroller snoops and responds
 
+        if (port->getCpuSnoopResponse() == DATA_CACHED) //if the CPU had the data cached
+        {
             request_port->setData(port->getData());
             request_port->setAddress(_current_request.address);
             request_port->setCpuRequest(_current_request.request_type);
@@ -69,7 +90,7 @@ void Bus::invalidateCaches(BusRequest request)
         if (i == _current_request.port_id)
             continue;
 
-        port = &_cpu_ports[i];
+        port = &(_cpu_ports[i]);
         port->setCurrentBusRequest(_current_request.request_type);
         port->setAddress(_current_request.address);
         port->notifyCPU(event);
@@ -82,7 +103,7 @@ void Bus::invalidateCaches(BusRequest request)
 //notifies the current port that their request is complete
 void Bus::notifyRequestDone(BusRequest request)
 {
-    CpuPort *port = &_cpu_ports[_current_request.port_id];
+    CpuPort *port = &(_cpu_ports[_current_request.port_id]);
     CpuPortEvent event;
     event.port_id = _current_request.port_id;
     event.event_type = REQUEST_READY;
@@ -90,29 +111,21 @@ void Bus::notifyRequestDone(BusRequest request)
     port->notifyCPU(event);
 }
 
-//adds a request to the queue starts to process requests if there were none queued
+//adds a request to the queue
 void Bus::addRequest(BusRequest request)
 {
 
-#pragma omp critical
-    {
-        size_t queue_lenght = _request_queue.size();
-
-        //add the req to the back of the queue
-        _request_queue.push_back(request);
-
-        // if(queue_lenght==0){//there were no requests on the queue
-        // #pragma omp
-        // }
-    }
+    std::lock_guard<std::mutex> lock(mut);
+    _request_queue.push_back(request);
 }
 
-//this methods loops through the queue of requests and resolves each of them
+//this method loops through the queue of requests and resolves each of them
 void Bus::processRequests()
 {
 
-    while (true)
+    while (_is_on)
     {
+        // printf("processing requests in the bus\n");
         if (_request_queue.size() > 0) //if there are requests in the queue
         {
             _current_request = _request_queue.front();
@@ -141,6 +154,7 @@ void Bus::processRequests()
                 break;
             }
 
+            //!!!!!add mutex
             //remove request from the queue
             _request_queue.pop_front();
         }
@@ -155,7 +169,7 @@ void Bus::onNotify(CpuPortEvent event)
     case ADD_REQUEST:
     {
         BusRequest req;
-        CpuPort *current_port = &_cpu_ports[event.port_id];
+        CpuPort *current_port = &(_cpu_ports[event.port_id]);
         req.data = current_port->getData();
         req.address = current_port->getAddress();
         req.request_type = current_port->getCpuRequest();

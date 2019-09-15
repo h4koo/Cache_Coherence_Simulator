@@ -46,9 +46,7 @@ private:
 
     void memWriteback(int address, std::string data);
 
-    void onNotify(simulationcomputer::CpuPortEvent event);
-
-    void cpuReadMiss(int address);
+        void cpuReadMiss(int address);
     void cpuWriteMiss(int address);
     void cpuWriteInvalidate(int address);
 
@@ -68,6 +66,8 @@ public:
 
     //checks the operation in the bus, acts accordingly and acknowledges the bus
     void snoop();
+
+    void onNotify(simulationcomputer::CpuPortEvent event);
 };
 
 } // namespace cpucore

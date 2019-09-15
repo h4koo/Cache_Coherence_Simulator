@@ -13,7 +13,7 @@ void Cache::dumpToFile()
     printf("\n The contents of the cache are:\n");
     for (int i = 0; i < CACHE_SIZE; ++i)
     {
-        printf("Cache block %d contains data: %s, tag: %d, valid: %d, shared: %d, dirty: %d \n", i, _blocks[i].data, _blocks[i].tag, _blocks[i].valid, _blocks[i].shared, _blocks[i].dirty);
+        printf("Cache block %d contains data: %s, tag: %d, valid: %d, shared: %d, dirty: %d \n", i, _blocks[i].data.c_str(), _blocks[i].tag, _blocks[i].valid, _blocks[i].shared, _blocks[i].dirty);
     }
 }
 

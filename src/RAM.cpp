@@ -54,4 +54,13 @@ void RAM::onNotify(MemPortEvent event)
         break;
     }
 }
+
+void RAM::dumpToFile()
+{
+    printf("\n The contents of the RAM memory are:\n");
+    for (int i = 0; i < RAM_SIZE; ++i)
+    {
+        printf("Address %d contains data: %s \n", i, _data[i].c_str());
+    }
+}
 } // namespace simulationcomputer

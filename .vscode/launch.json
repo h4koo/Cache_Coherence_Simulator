@@ -1,0 +1,51 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/mnt/c/Users/JorgeAgueroZamora/Documents/TEC/Arqui2/Proyecto1/build/bin/sim",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "/mnt/c/Users/JorgeAgueroZamora/Documents/TEC/Arqui2/Proyecto1/",
+            "environment": [],
+            "externalConsole": false,
+            //     "windows": {
+            //         "MIMode": "gdb",
+            //         "miDebuggerPath": "/usr/bin/gdb",
+            //         "setupCommands": [
+            //             {
+            //                 "description": "Enable pretty-printing for gdb",
+            //                 "text": "-enable-pretty-printing",
+            //                 "ignoreFailures": true
+            //             }
+            //         ]
+            //     },
+            //     "pipeTransport": {
+            //         "pipeCwd": "",
+            //         "pipeProgram": "c:\\windows\\sysnative\\bash.exe",
+            //         "pipeArgs": [
+            //             "-c"
+            //         ],
+            //         "debuggerPath": "/usr/bin/gdb"
+            //     },
+            //     "sourceFileMap": {
+            //         // "/mnt/c": "${env:systemdrive}/",
+            //         // "/usr": "C:/usr/include/c++/7/bits/stringfwd.h"
+            //     }
+            // }
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

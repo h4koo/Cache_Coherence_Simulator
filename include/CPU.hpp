@@ -1,6 +1,8 @@
 
 #include <iostream>
 #include <string>
+#include <future>
+#include <thread>
 #include "InstructionGenerator.hpp"
 #include "Clock.hpp"
 #include "CacheController.hpp"
@@ -10,7 +12,7 @@
 
 namespace cpucore
 {
-const int CPU_BASE_CLOCK = 1000000;
+const int CPU_BASE_CLOCK = 1;
 
 enum CPU_STATUS
 {
@@ -50,14 +52,26 @@ private:
     void dumpToFile();
 
 public:
-    CPU(std::string id) : _id(id), clk(CPU_BASE_CLOCK){};
+    CPU(std::string id) : clk(CPU_BASE_CLOCK), _id(id), _status(READY), _total_cycles(0), _waiting_cycles(0)
+    {
+        printf("Created CPU id: %s\n", id.c_str());
+    };
 
-    CPU(std::string id, simulationcomputer::CpuPort *bus_port) : _id(id), clk(CPU_BASE_CLOCK), _cache(bus_port){};
+    CPU(std::string id, simulationcomputer::CpuPort *bus_port) : clk(CPU_BASE_CLOCK), _cache(bus_port), _id(id), _status(READY){};
 
     void connectBusPort(simulationcomputer::CpuPort *bus_port) { _cache.connectBusPort(bus_port); };
 
+    CacheController *getCacheController()
+    {
+        return &_cache;
+    }
+
     //this function starts the CPU functioning, starts to count cycles and ticks the clock
     void loop();
+
+    void work();
+
+    void tick();
 };
 
 } // namespace cpucore
