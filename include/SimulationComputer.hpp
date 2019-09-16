@@ -40,7 +40,8 @@ public:
             cpu_id += ".txt";
             // _output_file.open(id);
             files[i].open(cpu_id);
-            std::string terminal_command = "gnome-terminal -- sh -c 'tail -f /home/h4koo/Documents/Arqui2/Cache_Coherence_Simulator/build/bin/";
+            // std::string terminal_command = "gnome-terminal -- sh -c 'tail -f /home/h4koo/Documents/Arqui2/Cache_Coherence_Simulator/build/bin/";
+            std::string terminal_command = "gnome-terminal -- sh -c 'tail -f ";
             terminal_command += cpu_id;
             terminal_command += "'";
             system(terminal_command.c_str());
