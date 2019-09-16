@@ -31,7 +31,7 @@ private:
     bool _is_on;
     std::mutex mut;
 
-    BusRequest _current_request;
+    BusRequest *_current_request;
     std::list<BusRequest> _request_queue; //this is the queue of requests for control
 
     std::vector<CpuPort> _cpu_ports;
@@ -45,16 +45,16 @@ public:
     Bus();
 
     //sends request to read data to all CPUs and ultimately Memory (RAM)
-    void requestReadData(BusRequest request);
+    void requestReadData();
 
     //sends a request to write data to Memory
-    void requestWriteData(BusRequest request);
+    void requestWriteData();
 
     //noifies CPUs to invalidate cache data
-    void invalidateCaches(BusRequest request);
+    void invalidateCaches();
 
     //notifies
-    void notifyRequestDone(BusRequest request);
+    void notifyRequestDone();
 
     //adds a request to the queue starts to process requests if there were none queued
     void addRequest(BusRequest request);
@@ -64,15 +64,15 @@ public:
 
     void onNotify(CpuPortEvent event);
 
-    CpuPort * connectCPU(Observer *cpu)
+    CpuPort *connectCPU(Observer *cpu)
     {
 
         //  CpuPort port(i, (Observer *)this);
         _cpu_ports[_connected_ports++].connectCPU(cpu);
-        return &_cpu_ports[_connected_ports-1];
+        return &_cpu_ports[_connected_ports - 1];
     }
 
-    RAMPort * connectRAM(RAMObserver *ram)
+    RAMPort *connectRAM(RAMObserver *ram)
     {
 
         _ram_memory.connectRAM(ram);

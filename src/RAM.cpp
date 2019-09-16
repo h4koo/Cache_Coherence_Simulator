@@ -21,6 +21,7 @@ void RAM::readData(int address)
     {
         _bus->setData(_data[address]);
         clk.tick();
+        dumpToFile();
     }
 }
 
@@ -38,6 +39,7 @@ void RAM::writeData(int address, std::string data)
         _data[address] = data;
     }
     clk.tick();
+    dumpToFile();
 }
 
 //method call when there is a request by the bus
@@ -57,10 +59,11 @@ void RAM::onNotify(MemPortEvent event)
 
 void RAM::dumpToFile()
 {
-    printf("\n The contents of the RAM memory are:\n");
+    printf("\n ---------------------  RAM CONTENTS  ------------------------\n");
     for (int i = 0; i < RAM_SIZE; ++i)
     {
         printf("Address %d contains data: %s \n", i, _data[i].c_str());
     }
+    printf("\n\n");
 }
 } // namespace simulationcomputer

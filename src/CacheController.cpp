@@ -74,6 +74,7 @@ void CacheController::cpuWrite(int address, std::string data)
             {
                 //write the cache as not shared and dirty
                 _cache.writeCacheBlock(address, data, false, true);
+                _status = RDY;
             }
         }
         else //cache write miss

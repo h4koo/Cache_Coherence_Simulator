@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <fstream>
 
 #ifndef CACHE_OBJ
 #define CACHE_OBJ
@@ -25,10 +26,10 @@ private:
     int _address_line;
     std::string _data_line;
 
-    void dumpToFile();
-
 public:
     Cache();
+
+    void dumpToFile(std::ofstream *output_file);
 
     // returns cache block at requested address
     CacheBlock *readCacheBlock(int address);

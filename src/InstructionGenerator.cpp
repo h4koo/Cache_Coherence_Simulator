@@ -16,7 +16,7 @@ Instruction InstructionGenerator::generateInstruction()
     Instruction ret;
     ret.inst_type = types[rand() % 3];
 
-    ret.inst_address = rand() % 8;
+    ret.inst_address = rand() % 16;
 
     return ret;
 }

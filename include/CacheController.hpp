@@ -54,6 +54,11 @@ public:
     CacheController();
     CacheController(simulationcomputer::CpuPort *bus_port);
 
+    void dumpCacheToFile(std::ofstream *out_file)
+    {
+        _cache.dumpToFile(out_file);
+    }
+
     CacheControllerStatus getStatus();
 
     std::string getCpuDataLine()

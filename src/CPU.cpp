@@ -66,12 +66,12 @@ void CPU::dumpToFile()
 {
 
     // printf("\n\n\nThe processor with ID: %s has run for %d cycles\n", _id.c_str(), _total_cycles);
-    (*_output_file) << "\n\n\nThe processor with ID: %s has run for %d cycles\n";
-     switch (_status)
+    (*_output_file) << "\n\n\nThe processor with ID:" << _id.c_str() << " has run for " << _total_cycles << " cycles\n";
+    switch (_status)
     {
     case READY:
         // printf("Is currently ready for a new task\n");
-        (*_output_file)<<"Is currently ready for a new task\n";
+        (*_output_file) << "Is currently ready for a new task\n";
         break;
     case WORKING:
         // printf("Is currently executing a work instruction\n");
@@ -84,12 +84,15 @@ void CPU::dumpToFile()
             if (_waiting_cycles == 0) //finished reading
             {
                 // printf("Processor has READ value: %s from address %d\n", _read_data.c_str(),                 _current_instruction.inst_address);
-                (*_output_file) << "Processor has READ value:"<< _read_data.c_str()<<" from address "<<_current_instruction.inst_address <<"\n";
+                (*_output_file) << "Processor has READ value:" << _read_data.c_str() << " from address " << _current_instruction.inst_address << "\n";
+
+                //output contents of cache
+                _cache.dumpCacheToFile(_output_file);
             }
             else
             {
                 // printf("Is currently waiting on a READ operation to address %d\n", _current_instruction.inst_address);
-                (*_output_file) << "Is currently waiting on a READ operation to address "<< _current_instruction.inst_address<<"\n" ;
+                (*_output_file) << "Is currently waiting on a READ operation to address " << _current_instruction.inst_address << "\n";
             }
         }
         else if (_current_instruction.inst_type == WRITE_MEM)
@@ -98,13 +101,17 @@ void CPU::dumpToFile()
             (*_output_file) << "Is currently waiting on a WRITE operation to address " << _current_instruction.inst_address << "\n";
             if (_waiting_cycles == 0) //finished writing
             {
-                printf("Processor has finished writing to address %d\n", _current_instruction.inst_address);
+                // printf("Processor has finished writing to address %d\n", _current_instruction.inst_address);
                 (*_output_file) << "Processor has finished writing to address " << _current_instruction.inst_address << "\n";
+
+                //output contents of cache
+                _cache.dumpCacheToFile(_output_file);
             }
         }
 
         break;
     }
+    (*_output_file).flush();
     //     std::string curr_status = _status == READY ? "ready for a new instruction" : _status == WORKING? "executing instrucion":"waiting"
 }
 

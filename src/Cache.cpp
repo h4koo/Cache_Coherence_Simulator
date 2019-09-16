@@ -8,13 +8,17 @@ Cache::Cache()
 }
 
 //outputs the contents of the Cache
-void Cache::dumpToFile()
+void Cache::dumpToFile(std::ofstream *output_file)
 {
-    printf("\n The contents of the cache are:\n");
+    // printf("\n The contents of the cache are:\n");
+    (*output_file) << "\n------------------------------  CACHE CONTENTS  ------------------------------\n";
     for (int i = 0; i < CACHE_SIZE; ++i)
     {
-        printf("Cache block %d contains data: %s, tag: %d, valid: %d, shared: %d, dirty: %d \n", i, _blocks[i].data.c_str(), _blocks[i].tag, _blocks[i].valid, _blocks[i].shared, _blocks[i].dirty);
+        // printf("Cache block %d contains data: %s, tag: %d, valid: %d, shared: %d, dirty: %d \n", i, _blocks[i].data.c_str(), _blocks[i].tag, _blocks[i].valid, _blocks[i].shared, _blocks[i].dirty);
+        (*output_file) << "Cache block " << i << " contains data: " << _blocks[i].data.c_str() << ", tag: " << _blocks[i].tag << ", valid: " << _blocks[i].valid << ", shared: " << _blocks[i].shared << ", dirty: " << _blocks[i].dirty << " \n";
     }
+
+    (*output_file).flush();
 }
 
 // returns cache block at requested address

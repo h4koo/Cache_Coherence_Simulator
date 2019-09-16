@@ -40,9 +40,9 @@ public:
             cpu_id += ".txt";
             // _output_file.open(id);
             files[i].open(cpu_id);
-            std::string terminal_command = "xterm -e 'sh -c \"tail -f ";
+            std::string terminal_command = "gnome-terminal -- sh -c 'tail -f /home/h4koo/Documents/Arqui2/Cache_Coherence_Simulator/build/bin/";
             terminal_command += cpu_id;
-            terminal_command += "\"'";
+            terminal_command += "'";
             system(terminal_command.c_str());
 
             //connect them to the bus
@@ -65,6 +65,16 @@ public:
         //connect RAM memory to bus
         ram.connectBusPort(bus.connectRAM((RAMObserver *)&ram));
     };
+
+    ~SimulationComputer()
+    {
+        for (int i = 0; i < NUM_CPUS; ++i)
+        {
+            files[i].close();
+        }
+    }
+
+    bool isStarted() { return _started; }
 
     void loopCPUs()
     {
@@ -95,6 +105,7 @@ public:
     void stop()
     {
         _started = false;
+        bus.stop();
     };
 };
 

@@ -1,4 +1,8 @@
 #include "../include/SimulationComputer.hpp"
+#include <stdio.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <termios.h>
 // #include <iostream>
 // #include <string>
 // #include <omp.h>
@@ -8,68 +12,93 @@
 
 using namespace simulationcomputer;
 
-// const int NUM_CPUS = 4;
-
-// class SimulationComputer
-// {
-//     bool _started;
-
-//     std::vector<cpucore::CPU> cpus;
-//     Bus bus;
-//     RAM ram;
-
-// public:
-//     SimulationComputer()
-//     {
-//         //create 4 cpus
-//         for (int i = 0; i < NUM_CPUS; ++i)
-//         {
-//             std::string cpu_id = "CPU00";
-//             cpu_id += std::to_string(i);
-//             cpucore::CPU c(cpu_id);
-//             cpus.push_back(c);
-
-//             //connect them to the bus
-//             bus.connectCPU((Observer *)&(cpus[i]));
-//         }
-
-//         //connect RAM memory to bus
-//         bus.connectRAM((RAMObserver *)&ram);
-//     };
-
-//     void loopCPUs()
-//     {
-//         while (_started)
-//         {
-// #pragma omp parallel num_threads(4) shared(cpus, bus, ram)
-//             {
-//                 int thread_id = omp_get_thread_num();
-//                 cpus[thread_id].work();
-
-// #pragma omp barrier
-//                 cpus[thread_id].tick();
-//             }
-//         }
-//     };
-
-//     void start()
-//     {
-//         _started = true;
-//         loopCPUs();
-//     };
-
-//     void stop()
-//     {
-//         _started = false;
-//     };
-// };
-
 int main()
 {
+
     printf("\nStarting Simulation\n");
     SimulationComputer comp;
     printf("after computer creation\n");
+    std::thread *last_running_thread;
+    // comp.start();
+    std::thread t(&SimulationComputer::start, &comp);
 
-    comp.start();
-    printf("after computer start\n");
+    last_running_thread = &t;
+
+    bool runnin_sim = true;
+    while (runnin_sim)
+    {
+        char input;
+        std::cin >> input;
+
+        switch (input)
+        {
+            //to quit the simulation
+        case 'q':
+            printf("\nQuitting the program\n");
+            if (comp.isStarted())
+            {
+                comp.stop();
+                if (last_running_thread->joinable())
+                    last_running_thread->join();
+            }
+            runnin_sim = false;
+            break;
+        case 'Q':
+            printf("\nQuitting the program\n");
+            if (comp.isStarted())
+            {
+                comp.stop();
+                if (last_running_thread->joinable())
+                    last_running_thread->join();
+            }
+            runnin_sim = false;
+            break;
+        case 'p':
+            printf("\npausing execution of the simulation\n");
+            if (comp.isStarted())
+            {
+                comp.stop();
+                if (last_running_thread->joinable())
+                    last_running_thread->join();
+            }
+            break;
+        case 'P':
+            printf("\npausing execution of the simulation\n");
+            if (comp.isStarted())
+            {
+                comp.stop();
+                if (last_running_thread->joinable())
+                    last_running_thread->join();
+            }
+            break;
+        case 's':
+        {
+            printf("\nrestarting execution of the simulation\n");
+            if (!comp.isStarted())
+            {
+                t = std::thread(&SimulationComputer::start, &comp);
+                last_running_thread = &t;
+            }
+            break;
+        }
+        case 'S':
+
+        {
+            printf("\nrestarting execution of the simulation\n");
+            if (!comp.isStarted())
+            {
+                t = std::thread(&SimulationComputer::start, &comp);
+                last_running_thread = &t;
+            }
+            break;
+        }
+        break;
+        default:
+            break;
+        }
+    }
+    if (last_running_thread->joinable())
+        last_running_thread->join();
+
+    return 0;
 };
